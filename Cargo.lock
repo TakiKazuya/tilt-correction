@@ -12,6 +12,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "ang"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "47a1c6e70361eb28c1d29ef6b84f9fd024670627b087c1974abe739547679b06"
+dependencies = [
+ "approx",
+ "num-traits",
+]
+
+[[package]]
+name = "approx"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "072df7202e63b127ab55acfe16ce97013d5b97bf160489336d3f1840fd78e99e"
+dependencies = [
+ "num-traits",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -181,6 +200,7 @@ checksum = "43b2853a4d09f215c24cc5489c992ce46052d359b5109343cbafbf26bc62f8a3"
 name = "tilt-correction"
 version = "0.1.0"
 dependencies = [
+ "ang",
  "opencv",
 ]
 

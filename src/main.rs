@@ -2,6 +2,7 @@ use opencv::core::{CV_PI, Point, Scalar, Vector};
 use opencv::imgcodecs::{imread, imwrite, IMREAD_GRAYSCALE, IMREAD_COLOR};
 use opencv::imgproc::{canny, hough_lines_p, line};
 use opencv::types::{VectorOfVec4i};
+use ang::atan2;
 
 const SOURCE_IMAGE_PATH: &str = "src_img.png";
 
@@ -62,5 +63,16 @@ fn main() {
             print!("code: {:?}", code);
             panic!();
         }
+    }
+
+    // 線分の角度の配列を作成する
+    let mut angles = vec![];
+    for line_vec in lines.to_vec() {
+        let x1 = line_vec[0] as f64;
+        let x2 = line_vec[2] as f64;
+        let y1 = line_vec[1] as f64;
+        let y2 = line_vec[3] as f64;
+        let angle = atan2(y2 - y1, x1 - x2).abs().in_degrees().round();
+        angles.push(angle);
     }
 }
