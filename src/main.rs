@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use opencv::core::{CV_PI, Point, Scalar, Vector};
 use opencv::imgcodecs::{imread, imwrite, IMREAD_GRAYSCALE, IMREAD_COLOR};
 use opencv::imgproc::{canny, hough_lines_p, line};
@@ -73,6 +74,24 @@ fn main() {
         let y1 = line_vec[1] as f64;
         let y2 = line_vec[3] as f64;
         let angle = atan2(y2 - y1, x1 - x2).abs().in_degrees().round();
-        angles.push(angle);
+        angles.push(angle as i32);
     }
+
+    // 角度の配列から最頻値を取得
+    let angle = get_mode(&angles);
+}
+
+pub fn get_mode(numbers: &Vec<i32>) -> Vec<i32> {
+    let mut map = HashMap::new();
+    for integer in numbers {
+        let count = map.entry(integer).or_insert(0);
+        *count += 1;
+    }
+
+    let max_value = map.values().cloned().max().unwrap_or(0);
+
+    map.into_iter()
+        .filter(|&(_, v)| v == max_value)
+        .map(|(&k, _)| k)
+        .collect()
 }
