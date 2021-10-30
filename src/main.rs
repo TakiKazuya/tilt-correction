@@ -73,12 +73,12 @@ fn main() {
         let x2 = line_vec[2] as f64;
         let y1 = line_vec[1] as f64;
         let y2 = line_vec[3] as f64;
-        let angle = atan2(y2 - y1, x1 - x2).abs().in_degrees().round();
-        angles.push(angle as i32);
+        let angle = atan2(y2 - y1, x1 - x2).abs().in_degrees().round() as i32;
+        angles.push(angle);
     }
 
-    // 角度の配列から最頻値を取得
-    let angle = get_mode(&angles);
+    // 角度の配列から最頻値を取得(複数ある場合は最初の要素を選択)
+    let angle = get_mode(&angles).first().unwrap().clone();
 }
 
 pub fn get_mode(numbers: &Vec<i32>) -> Vec<i32> {
