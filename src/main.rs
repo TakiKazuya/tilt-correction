@@ -1,7 +1,7 @@
 use std::collections::HashMap;
-use opencv::core::{CV_PI, Point, Scalar, Vector};
+use opencv::core::{CV_PI, Point, Scalar, Vector, Size, MatTrait, Point2f, BORDER_CONSTANT};
 use opencv::imgcodecs::{imread, imwrite, IMREAD_GRAYSCALE, IMREAD_COLOR};
-use opencv::imgproc::{canny, hough_lines_p, line};
+use opencv::imgproc::{canny, hough_lines_p, line, warp_affine, get_rotation_matrix_2d, WARP_INVERSE_MAP};
 use opencv::types::{VectorOfVec4i};
 use ang::atan2;
 
@@ -66,15 +66,48 @@ fn main() {
     let mut angles = vec![];
     for line_vec in lines.to_vec() {
         let x1 = line_vec[0] as f64;
-        let x2 = line_vec[2] as f64;
         let y1 = line_vec[1] as f64;
+        let x2 = line_vec[2] as f64;
         let y2 = line_vec[3] as f64;
-        let angle = atan2(y2 - y1, x1 - x2).abs().in_degrees().round() as i32;
+        let angle = atan2(y2 - y1, x1 - x2).in_degrees().round() as i32;
         angles.push(angle);
     }
 
     // 角度の配列から最頻値を取得(複数ある場合は最初の要素を選択)
     let angle = get_mode(&angles).first().unwrap().clone();
+
+    // 角度が0or90の場合は何もしない。
+    // それ以外はアフィン変換
+    let result_img = if angle.abs() == 0 || angle.abs() == 90 {
+        src_img
+    } else {
+        let mut dst_img = src_img.clone();
+        let width = dst_img.cols();
+        let height = dst_img.rows();
+        let center = Point2f::new((width/2) as f32, (height/2) as f32); // 回転中心
+        let rotation_angle = (angle - 180) as f64; // 回転する角度
+
+        let m =
+            get_rotation_matrix_2d(center, rotation_angle, 1.0)
+                .unwrap_or_else(|code| {
+                    panic!("code: {}", code)
+                });
+
+        let size = Size::new(width, height); // 出力画像のサイズ
+        let result_affine = warp_affine(&src_img, &mut dst_img, &m, size, WARP_INVERSE_MAP, BORDER_CONSTANT, Scalar::default());
+
+        match result_affine {
+            Ok(_) => {
+                dst_img
+            },
+            Err(code) => {
+                panic!("code: {}", code);
+            }
+        }
+    };
+
+    imwrite("result.png", &result_img, &Vector::new())
+        .unwrap_or_else(|e| panic!("code: {}", e));
 }
 
 pub fn get_mode(numbers: &Vec<i32>) -> Vec<i32> {
