@@ -14,8 +14,7 @@ fn main() {
     match result_read_img {
         Ok(img) => src_img = img,
         Err(code) => {
-            print!("code: {:?}", code);
-            panic!();
+            panic!("code: {:?}", code);
         }
     };
 
@@ -25,8 +24,7 @@ fn main() {
     match result_read_img {
         Ok(img) => output_img = img,
         Err(code) => {
-            print!("code: {:?}", code);
-            panic!();
+            panic!("code: {:?}", code);
         }
     };
 
@@ -36,8 +34,7 @@ fn main() {
     match result_find_edge {
         Ok(_) => imwrite("edge.png", &edge_img, &Vector::new()).ok(),
         Err(code) => {
-            print!("code: {:?}", code);
-            panic!();
+            panic!("code: {:?}", code);
         }
     };
 
@@ -61,8 +58,7 @@ fn main() {
             imwrite("line.png", &line_img, &Vector::new()).ok();
         },
         Err(code) => {
-            print!("code: {:?}", code);
-            panic!();
+            panic!("code: {:?}", code);
         }
     }
 
