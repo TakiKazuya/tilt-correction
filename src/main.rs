@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use opencv::core::{CV_PI, Point, Scalar, Vector, Size, MatTrait, Point2f, BORDER_CONSTANT};
+use opencv::core::{CV_PI, Point, Scalar, Vector, Size, MatTrait, Point2f, BORDER_CONSTANT, MatTraitManual};
 use opencv::imgcodecs::{imread, imwrite, IMREAD_GRAYSCALE, IMREAD_COLOR};
 use opencv::imgproc::{canny, hough_lines_p, line, warp_affine, get_rotation_matrix_2d, WARP_INVERSE_MAP};
 use opencv::types::{VectorOfVec4i};
@@ -9,13 +9,9 @@ const SOURCE_IMAGE_PATH: &str = "src_img.png";
 
 fn main() {
     // 処理元の画像を定義
-    let src_img;
-    let result_read_img = imread(SOURCE_IMAGE_PATH, IMREAD_GRAYSCALE);
-    match result_read_img {
-        Ok(img) => src_img = img,
-        Err(code) => {
-            panic!("code: {:?}", code);
-        }
+    let src_img = imread(SOURCE_IMAGE_PATH, IMREAD_GRAYSCALE).unwrap();
+    if src_img.data().is_err() {
+        panic!("Failed to read image.")
     };
 
     // 出力先の画像を定義
