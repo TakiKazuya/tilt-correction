@@ -1,7 +1,7 @@
 use std::collections::HashMap;
-use opencv::core::{CV_PI, Point, Scalar, Vector, Size, MatTrait, Point2f, BORDER_CONSTANT, MatTraitManual};
+use opencv::core::{CV_PI, Point, Scalar, Vector, Size, MatTrait, Point2f, BORDER_CONSTANT, MatTraitManual, Mat};
 use opencv::imgcodecs::{imread, imwrite, IMREAD_GRAYSCALE, IMREAD_COLOR};
-use opencv::imgproc::{canny, hough_lines_p, line, warp_affine, get_rotation_matrix_2d, WARP_INVERSE_MAP};
+use opencv::imgproc::{canny, hough_lines_p, line, warp_affine, get_rotation_matrix_2d, WARP_INVERSE_MAP, threshold, THRESH_OTSU};
 use opencv::types::{VectorOfVec4i};
 use ang::atan2;
 
@@ -27,9 +27,13 @@ fn main() {
     let width = src_img.cols();
     let height = src_img.rows();
 
+    // エッジ検出で使用する閾値の計算
+    let max_thresh_val = threshold(&src_img, &mut Mat::default(), 0.0, 255.0, THRESH_OTSU).unwrap();
+    let min_thresh_val = max_thresh_val * 0.5;
+
     // エッジ検出
     let mut edge_img = src_img.clone();
-    let result_find_edge = canny(&src_img, &mut edge_img, 100.0, 100.0, 3, false);
+    let result_find_edge = canny(&src_img, &mut edge_img, min_thresh_val, max_thresh_val, 3, false);
     match result_find_edge {
         Ok(_) => imwrite("edge.png", &edge_img, &Vector::new()).ok(),
         Err(code) => {
@@ -82,8 +86,6 @@ fn main() {
         src_img
     } else {
         let mut dst_img = src_img.clone();
-        let width = dst_img.cols();
-        let height = dst_img.rows();
         let center = Point2f::new((width/2) as f32, (height/2) as f32); // 回転中心
         let rotation_angle = (angle - 180) as f64; // 回転する角度
 
