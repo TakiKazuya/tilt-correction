@@ -45,7 +45,8 @@ fn main() {
     let mut line_img = output_img.clone();
     let max_line_gap = (((width * width) + (height * height)) as f64).sqrt();
     let mut lines= VectorOfVec4i::default();
-    let result_hough_lines= hough_lines_p(&edge_img, &mut lines, 1.0, CV_PI / 180.0, 250, 0.0, max_line_gap);
+    let threshold_val_for_hough = (max_thresh_val * 2.0) as i32;
+    let result_hough_lines= hough_lines_p(&edge_img, &mut lines, 1.0, CV_PI / 180.0, threshold_val_for_hough, 0.0, max_line_gap);
     match result_hough_lines {
         Ok(_) => {
             // 線分を描画する
