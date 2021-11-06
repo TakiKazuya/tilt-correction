@@ -24,6 +24,9 @@ fn main() {
         }
     };
 
+    let width = src_img.cols();
+    let height = src_img.rows();
+
     // エッジ検出
     let mut edge_img = src_img.clone();
     let result_find_edge = canny(&src_img, &mut edge_img, 100.0, 100.0, 3, false);
@@ -36,8 +39,9 @@ fn main() {
 
     // ハフ変換による直線検出
     let mut line_img = output_img.clone();
+    let max_line_gap = (((width * width) + (height * height)) as f64).sqrt();
     let mut lines= VectorOfVec4i::default();
-    let result_hough_lines= hough_lines_p(&edge_img, &mut lines, 1.0, CV_PI / 180.0, 250, 0.0, 1000.0);
+    let result_hough_lines= hough_lines_p(&edge_img, &mut lines, 1.0, CV_PI / 180.0, 250, 0.0, max_line_gap);
     match result_hough_lines {
         Ok(_) => {
             // 線分を描画する
